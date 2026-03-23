@@ -49,6 +49,7 @@ private System.ComponentModel.IContainer components = null;
         // 
         // tableLayoutPanel1
         // 
+        this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
         this.tableLayoutPanel1.ColumnCount = 2;
         this.tableLayoutPanel1.RowCount = 5;
         this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -84,17 +85,28 @@ private System.ComponentModel.IContainer components = null;
         // btnRefresh
         // 
         this.btnRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+        this.btnRefresh.FlatAppearance.BorderSize = 2;
+        this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnRefresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
         this.btnRefresh.Name = "btnRefresh";
         this.tableLayoutPanel1.SetColumn(this.btnRefresh, 1);
         this.tableLayoutPanel1.SetRow(this.btnRefresh, 1);
         this.btnRefresh.TabIndex = 2;
         this.btnRefresh.Text = "Refresh";
-        this.btnRefresh.UseVisualStyleBackColor = true;
+        this.btnRefresh.UseVisualStyleBackColor = false;
+        this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
+        this.btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+        this.btnRefresh.MouseEnter += new System.EventHandler(this.btnRefresh_MouseEnter);
+        this.btnRefresh.MouseLeave += new System.EventHandler(this.btnRefresh_MouseLeave);
         // 
         // btnConnect
         // 
-        this.btnConnect.BackColor = System.Drawing.Color.LightGreen;
+        this.btnConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
         this.btnConnect.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.btnConnect.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+        this.btnConnect.FlatAppearance.BorderSize = 2;
+        this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
         this.btnConnect.Name = "btnConnect";
         this.tableLayoutPanel1.SetColumnSpan(this.btnConnect, 2);
@@ -102,6 +114,9 @@ private System.ComponentModel.IContainer components = null;
         this.btnConnect.TabIndex = 3;
         this.btnConnect.Text = "Connect to Device";
         this.btnConnect.UseVisualStyleBackColor = false;
+        this.btnConnect.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+        this.btnConnect.MouseEnter += new System.EventHandler(this.btnConnect_MouseEnter);
+        this.btnConnect.MouseLeave += new System.EventHandler(this.btnConnect_MouseLeave);
         // 
         // lblStatus
         // 
@@ -116,8 +131,10 @@ private System.ComponentModel.IContainer components = null;
         // 
         // txtLog
         // 
+        this.txtLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(17)))), ((int)(((byte)(0)))));
         this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
         this.txtLog.Font = new System.Drawing.Font("Consolas", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+        this.txtLog.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
         this.txtLog.Multiline = true;
         this.txtLog.Name = "txtLog";
         this.tableLayoutPanel1.SetColumnSpan(this.txtLog, 2);
@@ -130,6 +147,7 @@ private System.ComponentModel.IContainer components = null;
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
         this.ClientSize = new System.Drawing.Size(650, 550);
         this.Controls.Add(this.tableLayoutPanel1);
         this.Name = "Form1";

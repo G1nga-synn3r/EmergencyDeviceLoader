@@ -61,9 +61,9 @@ public partial class Form1 : Form
                 var searchText = $"{caption} {description} {deviceId}".ToLowerInvariant();
 
                 bool isEdlDevice = searchText.Contains("9008") ||
-                                   searchText.Contains("qdloader") ||
-                                   searchText.Contains("qualcomm hs-usb") ||
-                                   searchText.Contains("vid_05c6&pid_9008");
+                                    searchText.Contains("qdloader") ||
+                                    searchText.Contains("qualcomm hs-usb") ||
+                                    searchText.Contains("vid_05c6&pid_9008");
 
                 if (isEdlDevice)
                 {
@@ -177,73 +177,105 @@ public partial class Form1 : Form
          return "Qualcomm Device";
      }
 
-     /// <summary>
-     /// Handles the btnConnect click event to open the selected serial port.
-     /// </summary>
-     private void btnConnect_Click(object? sender, EventArgs e)
-     {
-         // Get the selected item from comboEDLPorts
-         var selectedItem = comboEDLPorts.SelectedItem?.ToString() ?? string.Empty;
-         if (string.IsNullOrWhiteSpace(selectedItem) || selectedItem.StartsWith("No EDL"))
-         {
-             MessageBox.Show("Please select a valid EDL port first.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-             return;
-         }
+    /// <summary>
+    /// Handles the btnConnect click event to open the selected serial port.
+    /// </summary>
+    private void btnConnect_Click(object? sender, EventArgs e)
+    {
+        // Get the selected item from comboEDLPorts
+        var selectedItem = comboEDLPorts.SelectedItem?.ToString() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(selectedItem) || selectedItem.StartsWith("No EDL"))
+        {
+            MessageBox.Show("Please select a valid EDL port first.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
 
-         // Parse the COMx part (e.g. split by " - " or regex)
-         string? portName = null;
-         var parts = selectedItem.Split(new[] { " - " }, StringSplitOptions.None);
-         if (parts.Length >= 1)
-         {
-             var firstPart = parts[0].Trim();
-             if (firstPart.StartsWith("COM", StringComparison.InvariantCultureIgnoreCase))
-             {
-                 portName = firstPart;
-             }
-         }
+        // Parse the COMx part (e.g. split by " - " or regex)
+        string? portName = null;
+        var parts = selectedItem.Split(new[] { " - " }, StringSplitOptions.None);
+        if (parts.Length >= 1)
+        {
+            var firstPart = parts[0].Trim();
+            if (firstPart.StartsWith("COM", StringComparison.InvariantCultureIgnoreCase))
+            {
+                portName = firstPart;
+            }
+        }
 
-         if (string.IsNullOrEmpty(portName))
-         {
-             // Fallback: use regex to find COM\d+ in the selected item
-             var match = Regex.Match(selectedItem, @"COM\d+", RegexOptions.IgnoreCase);
-             if (match.Success)
-             {
-                 portName = match.Value;
-             }
-         }
+        if (string.IsNullOrEmpty(portName))
+        {
+            // Fallback: use regex to find COM\d+ in the selected item
+            var match = Regex.Match(selectedItem, @"COM\d+", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                portName = match.Value;
+            }
+        }
 
-         if (string.IsNullOrEmpty(portName))
-         {
-             MessageBox.Show("Could not parse COM port from selection.", "Parsing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-             return;
-         }
+        if (string.IsNullOrEmpty(portName))
+        {
+            MessageBox.Show("Could not parse COM port from selection.", "Parsing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
 
-         try
-         {
-             // Close any existing port
-             currentPort?.Close();
+        try
+        {
+            // Close any existing port
+            currentPort?.Close();
 
-             // Create and configure new SerialPort
-             currentPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
-             currentPort.ReadTimeout = 2000;
-             currentPort.WriteTimeout = 2000;
+            // Create and configure new SerialPort
+            currentPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+            currentPort.ReadTimeout = 2000;
+            currentPort.WriteTimeout = 2000;
 
-             // Open the port
-             currentPort.Open();
+            // Open the port
+            currentPort.Open();
 
-             // Update UI
-             txtLog.AppendText($"✅ Connected to {portName} at 115200 8N1\r\n");
-             lblStatus.Text = "Connected ✓";
-             lblStatus.ForeColor = Color.Green;
-             btnConnect.Enabled = false;
-             btnRefresh.Enabled = false;
-         }
-         catch (Exception ex)
-         {
-             txtLog.AppendText($"❌ Failed: {ex.Message}\r\n");
-             lblStatus.Text = "Connection failed";
-             lblStatus.ForeColor = Color.Red;
-             MessageBox.Show("Could not open port.\n\nTip: Run as Administrator + make sure phone is in EDL mode and drivers are installed.", "EDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-         }
-     }
- }
+            // Update UI
+            txtLog.AppendText($"✅ Connected to {portName} at 115200 8N1\r\n");
+            lblStatus.Text = "Connected ✓";
+            lblStatus.ForeColor = Color.Green;
+            btnConnect.Enabled = false;
+            btnRefresh.Enabled = false;
+        }
+        catch (Exception ex)
+        {
+            txtLog.AppendText($"❌ Failed: {ex.Message}\r\n");
+            lblStatus.Text = "Connection failed";
+            lblStatus.ForeColor = Color.Red;
+            MessageBox.Show("Could not open port.\n\nTip: Run as Administrator + make sure phone is in EDL mode and drivers are installed.", "EDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void btnRefresh_MouseEnter(object? sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(25)))));
+        }
+    }
+
+    private void btnRefresh_MouseLeave(object? sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
+        }
+    }
+
+    private void btnConnect_MouseEnter(object? sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(25)))));
+        }
+    }
+
+    private void btnConnect_MouseLeave(object? sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(15)))));
+        }
+    }
+}
