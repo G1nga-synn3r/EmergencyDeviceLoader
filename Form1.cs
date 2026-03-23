@@ -1,6 +1,8 @@
 using System.Management;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.IO.Ports;
+using System.Drawing;
 
 namespace EmergencyDeviceLoader;
 
@@ -11,7 +13,11 @@ public partial class Form1 : Form
         InitializeComponent();
         this.Load += Form1_Load;
         btnRefresh.Click += BtnRefresh_Click;
+        btnConnect.Click += btnConnect_Click;
     }
+
+    private SerialPort? currentPort = null;
+
 
     /// <summary>
     /// Handles the form load event to automatically detect EDL ports on startup.
@@ -152,22 +158,92 @@ public partial class Form1 : Form
     }
 
     /// <summary>
-    /// Gets a friendly port name based on the device caption and description.
-    /// </summary>
-    /// <param name="caption">The device caption.</param>
-    /// <param name="description">The device description.</param>
-    /// <returns>A formatted port name string.</returns>
-    private static string GetFriendlyPortName(string caption, string description)
-    {
-        var text = $"{caption} {description}".ToLowerInvariant();
+     /// Gets a friendly port name based on the device caption and description.
+     /// </summary>
+     /// <param name="caption">The device caption.</param>
+     /// <param name="description">The device description.</param>
+     /// <returns>A formatted port name string.</returns>
+     private static string GetFriendlyPortName(string caption, string description)
+     {
+         var text = $"{caption} {description}".ToLowerInvariant();
 
-        if (text.Contains("qdloader"))
-            return "Qualcomm HS-USB QDLoader 9008";
-        if (text.Contains("qualcomm hs-usb"))
-            return "Qualcomm HS-USB";
-        if (text.Contains("9008"))
-            return "Qualcomm 9008";
+         if (text.Contains("qdloader"))
+             return "Qualcomm HS-USB QDLoader 9008";
+         if (text.Contains("qualcomm hs-usb"))
+             return "Qualcomm HS-USB";
+         if (text.Contains("9008"))
+             return "Qualcomm 9008";
 
-        return "Qualcomm Device";
-    }
-}
+         return "Qualcomm Device";
+     }
+
+     /// <summary>
+     /// Handles the btnConnect click event to open the selected serial port.
+     /// </summary>
+     private void btnConnect_Click(object? sender, EventArgs e)
+     {
+         // Get the selected item from comboEDLPorts
+         var selectedItem = comboEDLPorts.SelectedItem?.ToString() ?? string.Empty;
+         if (string.IsNullOrWhiteSpace(selectedItem) || selectedItem.StartsWith("No EDL"))
+         {
+             MessageBox.Show("Please select a valid EDL port first.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+             return;
+         }
+
+         // Parse the COMx part (e.g. split by " - " or regex)
+         string? portName = null;
+         var parts = selectedItem.Split(new[] { " - " }, StringSplitOptions.None);
+         if (parts.Length >= 1)
+         {
+             var firstPart = parts[0].Trim();
+             if (firstPart.StartsWith("COM", StringComparison.InvariantCultureIgnoreCase))
+             {
+                 portName = firstPart;
+             }
+         }
+
+         if (string.IsNullOrEmpty(portName))
+         {
+             // Fallback: use regex to find COM\d+ in the selected item
+             var match = Regex.Match(selectedItem, @"COM\d+", RegexOptions.IgnoreCase);
+             if (match.Success)
+             {
+                 portName = match.Value;
+             }
+         }
+
+         if (string.IsNullOrEmpty(portName))
+         {
+             MessageBox.Show("Could not parse COM port from selection.", "Parsing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+             return;
+         }
+
+         try
+         {
+             // Close any existing port
+             currentPort?.Close();
+
+             // Create and configure new SerialPort
+             currentPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+             currentPort.ReadTimeout = 2000;
+             currentPort.WriteTimeout = 2000;
+
+             // Open the port
+             currentPort.Open();
+
+             // Update UI
+             txtLog.AppendText($"✅ Connected to {portName} at 115200 8N1\r\n");
+             lblStatus.Text = "Connected ✓";
+             lblStatus.ForeColor = Color.Green;
+             btnConnect.Enabled = false;
+             btnRefresh.Enabled = false;
+         }
+         catch (Exception ex)
+         {
+             txtLog.AppendText($"❌ Failed: {ex.Message}\r\n");
+             lblStatus.Text = "Connection failed";
+             lblStatus.ForeColor = Color.Red;
+             MessageBox.Show("Could not open port.\n\nTip: Run as Administrator + make sure phone is in EDL mode and drivers are installed.", "EDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+         }
+     }
+ }
